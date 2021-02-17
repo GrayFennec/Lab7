@@ -82,21 +82,22 @@
       let endpoint = document.getElementById('endpoint');
       let output = document.getElementById('output');
       let form = document.getElementById('recordForm');
+      function errorCheck(response) {
+        if (!response.ok) {
+          throw Error(response.statusText);
+        }
+        return response;
+      }
       // This function should fetch all of the data from the given endpoint.
       // From the 4 CRUD actions, this is the READ action, and uses the GET http method.
       // The main difference from fetchOne() will be the URL you request from; check
       // the writeup to view the URL pattern for fetch one and fetch all
       function fetchAll() {
-        
-        try{
-          fetch(endpoint.value, {method: 'GET'})
-            .then(response => response.json())
-            .then(data => output.value = JSON.stringify(data));
-        } catch (error) {
-          output.value = error;
-        }
-
-
+        fetch(endpoint.value, {method: 'GET'})
+          .then(errorCheck)
+          .then(response => response.json())
+          .then(data => output.value = JSON.stringify(data))
+          .catch(error => output.value = error);
       }
 
       // This function should fetch one entry from the given endpoint.
@@ -105,13 +106,11 @@
       // the writeup to view the URL pattern for fetch one and fetch all
       function fetchOne() {
         let id = window.prompt("Enter record id:",);
-        try{
-          fetch(endpoint.value + '/' + id, {method: 'GET'})
-            .then(response => response.json())
-            .then(data => output.value = JSON.stringify(data));
-        } catch (error) {
-          output.value = error;
-        }
+        fetch(endpoint.value + '/' + id, {method: 'GET'})
+          .then(errorCheck)
+          .then(response => response.json())
+          .then(data => output.value = JSON.stringify(data))
+          .catch(error => output.value = error);
       }
 
       // This function should use fetch to create one entry in the given endpoint.
@@ -121,21 +120,19 @@
       function createRecord() {
         form.style.display = 'block';
         form.addEventListener('submit', () => {
-          try{
-            fetch(endpoint.value, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              }, 
-              body: JSON.stringify({
-                "title" : document.getElementById('title').value, 
-                "author" : document.getElementById('author').value})
-            })
-              .then(response => response.json())
-              .then(data => output.value = JSON.stringify(data));
-          } catch (error) {
-            output.value = error;
-          }
+          fetch(endpoint.value, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }, 
+            body: JSON.stringify({
+              "title" : document.getElementById('title').value, 
+              "author" : document.getElementById('author').value})
+          })
+            .then(errorCheck)
+            .then(response => response.json())
+            .then(data => output.value = JSON.stringify(data))
+            .catch(error => output.value = error);
           form.style.display = 'none';
         });
       }
@@ -149,21 +146,19 @@
         form.style.display = 'block';
         id_container.style.display = 'block';
         form.addEventListener('submit', () => {
-          try{
-            fetch(document.getElementById('endpoint').value + "/" + document.getElementById('recordID').value, {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json'
-              }, 
-              body: JSON.stringify({
-                "title" : document.getElementById('title').value, 
-                "author" : document.getElementById('author').value})
-            })
-              .then(response => response.json())
-              .then(data => document.getElementById('output').value = JSON.stringify(data));
-          } catch (error) {
-            output.value = error;
-          }
+          fetch(document.getElementById('endpoint').value + "/" + document.getElementById('recordID').value, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            }, 
+            body: JSON.stringify({
+              "title" : document.getElementById('title').value, 
+              "author" : document.getElementById('author').value})
+          })
+            .then(errorCheck)
+            .then(response => response.json())
+            .then(data => output = JSON.stringify(data))
+            .catch(error => output.value = error);
           form.style.display = 'none';
           id_container.style.display = 'none';
         });
@@ -177,8 +172,10 @@
       function deleteRecord() {
         let id = window.prompt("Enter record id:",);
         fetch(document.getElementById('endpoint').value + '/' + id, {method: 'DELETE'})
+          .then(errorCheck)  
           .then(response => response.json())
-          .then(data => document.getElementById('output').value = JSON.stringify(data));
+          .then(data => output.value = JSON.stringify(data))
+          .catch(error => output.value = error);
       }
 
       window.addEventListener('DOMContentLoaded', () => {
