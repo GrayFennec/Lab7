@@ -79,14 +79,24 @@
 
     <!-- Main Script -->
     <script type="module">
+      let endpoint = document.getElementById('endpoint');
+      let output = document.getElementById('output');
+      let form = document.getElementById('recordForm');
       // This function should fetch all of the data from the given endpoint.
       // From the 4 CRUD actions, this is the READ action, and uses the GET http method.
       // The main difference from fetchOne() will be the URL you request from; check
       // the writeup to view the URL pattern for fetch one and fetch all
       function fetchAll() {
-        fetch(document.getElementById('endpoint').value, {method: 'GET'})
-          .then(response => response.json())
-          .then(data => document.getElementById('output').value = JSON.stringify(data));
+        
+        try{
+          fetch(endpoint.value, {method: 'GET'})
+            .then(response => response.json())
+            .then(data => output.value = JSON.stringify(data));
+        } catch (error) {
+          output.value = error;
+        }
+
+
       }
 
       // This function should fetch one entry from the given endpoint.
@@ -95,9 +105,13 @@
       // the writeup to view the URL pattern for fetch one and fetch all
       function fetchOne() {
         let id = window.prompt("Enter record id:",);
-        fetch(document.getElementById('endpoint').value + '/' + id, {method: 'GET'})
-          .then(response => response.json())
-          .then(data => document.getElementById('output').value = JSON.stringify(data));
+        try{
+          fetch(endpoint.value + '/' + id, {method: 'GET'})
+            .then(response => response.json())
+            .then(data => output.value = JSON.stringify(data));
+        } catch (error) {
+          output.value = error;
+        }
       }
 
       // This function should use fetch to create one entry in the given endpoint.
@@ -105,20 +119,23 @@
       // The main difference from updateRecord() will be the URL you send data to; check
       // the writeup to view the URL pattern for create and update
       function createRecord() {
-        let form = document.getElementById('recordForm');
         form.style.display = 'block';
         form.addEventListener('submit', () => {
-          fetch(document.getElementById('endpoint').value, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            }, 
-            body: JSON.stringify({
-              "title" : document.getElementById('title').value, 
-              "author" : document.getElementById('author').value})
-          })
-            .then(response => response.json())
-            .then(data => document.getElementById('output').value = JSON.stringify(data));
+          try{
+            fetch(endpoint.value, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              }, 
+              body: JSON.stringify({
+                "title" : document.getElementById('title').value, 
+                "author" : document.getElementById('author').value})
+            })
+              .then(response => response.json())
+              .then(data => output.value = JSON.stringify(data));
+          } catch (error) {
+            output.value = error;
+          }
           form.style.display = 'none';
         });
       }
@@ -128,22 +145,25 @@
       // The main difference from createRecord() will be the URL you send data to; check
       // the writeup to view the URL pattern for create and update
       function updateRecord() {
-        let form = document.getElementById('recordForm');
         let id_container = document.getElementById('recordIDcontainer');
         form.style.display = 'block';
         id_container.style.display = 'block';
         form.addEventListener('submit', () => {
-          fetch(document.getElementById('endpoint').value + "/" + document.getElementById('recordID').value, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            }, 
-            body: JSON.stringify({
-              "title" : document.getElementById('title').value, 
-              "author" : document.getElementById('author').value})
-          })
-            .then(response => response.json())
-            .then(data => document.getElementById('output').value = JSON.stringify(data));
+          try{
+            fetch(document.getElementById('endpoint').value + "/" + document.getElementById('recordID').value, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              }, 
+              body: JSON.stringify({
+                "title" : document.getElementById('title').value, 
+                "author" : document.getElementById('author').value})
+            })
+              .then(response => response.json())
+              .then(data => document.getElementById('output').value = JSON.stringify(data));
+          } catch (error) {
+            output.value = error;
+          }
           form.style.display = 'none';
           id_container.style.display = 'none';
         });
